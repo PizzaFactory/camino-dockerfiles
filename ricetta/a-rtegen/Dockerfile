@@ -1,4 +1,4 @@
-FROM codenvy/cpp_gcc
+FROM pf0camino/cross-nios2-elf
 MAINTAINER Masaki Muranaka <monaka@pizzafactory.jp>
 
 USER root
