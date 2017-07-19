@@ -3,6 +3,8 @@ MAINTAINER Masaki Muranaka <monaka@pizzafactory.jp>
 
 USER root
 
+RUN apt-get update && apt-get -y install bzip2
+
 RUN mkdir -p /opt/uClinux
 RUN curl -q http://jaist.dl.sourceforge.net/project/adi-toolchain/2014R1/2014R1-RC2/x86_64/blackfin-toolchain-2014R1-RC2.x86_64.tar.bz2 2>/dev/null | tar xCjf / -
 RUN curl -q http://jaist.dl.sourceforge.net/project/adi-toolchain/2014R1/2014R1-RC2/x86_64/blackfin-toolchain-elf-gcc-4.3-2014R1-RC2.x86_64.tar.bz2 2>/dev/null | tar xCjf / -
