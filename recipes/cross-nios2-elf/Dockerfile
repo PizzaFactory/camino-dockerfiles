@@ -1,4 +1,4 @@
-FROM codenvy/cpp_gcc
+FROM camino.azurecr.io/eclipse/cpp_gcc
 MAINTAINER Masaki Muranaka <monaka@pizzafactory.jp>
 
 USER root
