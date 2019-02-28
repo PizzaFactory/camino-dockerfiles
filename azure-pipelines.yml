@@ -1,18 +1,185 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
+jobs:
+    
 
-pool:
-  vmImage: 'Ubuntu 16.04'
+### recipes/a-rtegen/Dockerfile cantinona/a-rtegen depends on cantinona/cross-nios2-elf recipes/cross-nios2-elf
+  - job: "recipes__a__rtegen__Dockerfile"
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    dependsOn: "recipes__cross__nios2__elf__Dockerfile"
+    steps:
 
-steps:
-- task: AzureCLI@1
-  inputs:
-    azureSubscription: 1fbdb4bb-441e-4922-ba1f-ffd04f533ea1
-    scriptLocation: inlineScript
-    inlineScript: az acr login -g camino -n camino 
-  displayName: 'Login to ACR.'
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
 
-- script: PRIVATE_REPO=camino.azurecr.io ./build.sh
-  displayName: 'Build and push containers.'
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/a-rtegen
+        docker tag camino.azurecr.io/cantinona/a-rtegen cantinona/a-rtegen
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/a-rtegen/Dockerfile --cache-from cantinona/a-rtegen -t camino.azurecr.io/cantinona/a-rtegen recipes/a-rtegen
+      displayName: "Building camino.azurecr.io/cantinona/a-rtegen"
+    - script: docker push camino.azurecr.io/cantinona/a-rtegen
+      displayName: "Pushing camino.azurecr.io/cantinona/a-rtegen"
+
+### recipes/cross-arm-eabi/Dockerfile cantinona/cross-arm-eabi depends on eclipse/cpp_gcc eclipse/cpp_gcc
+  - job: "recipes__cross__arm__eabi__Dockerfile"
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/cross-arm-eabi
+        docker tag camino.azurecr.io/cantinona/cross-arm-eabi cantinona/cross-arm-eabi
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/cross-arm-eabi/Dockerfile --cache-from cantinona/cross-arm-eabi -t camino.azurecr.io/cantinona/cross-arm-eabi recipes/cross-arm-eabi
+      displayName: "Building camino.azurecr.io/cantinona/cross-arm-eabi"
+    - script: docker push camino.azurecr.io/cantinona/cross-arm-eabi
+      displayName: "Pushing camino.azurecr.io/cantinona/cross-arm-eabi"
+
+### recipes/cross-bfin-elf/Dockerfile cantinona/cross-bfin-elf depends on eclipse/cpp_gcc eclipse/cpp_gcc
+  - job: "recipes__cross__bfin__elf__Dockerfile"
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/cross-bfin-elf
+        docker tag camino.azurecr.io/cantinona/cross-bfin-elf cantinona/cross-bfin-elf
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/cross-bfin-elf/Dockerfile --cache-from cantinona/cross-bfin-elf -t camino.azurecr.io/cantinona/cross-bfin-elf recipes/cross-bfin-elf
+      displayName: "Building camino.azurecr.io/cantinona/cross-bfin-elf"
+    - script: docker push camino.azurecr.io/cantinona/cross-bfin-elf
+      displayName: "Pushing camino.azurecr.io/cantinona/cross-bfin-elf"
+
+### recipes/cross-mips-elf/Dockerfile cantinona/cross-mips-elf depends on eclipse/cpp_gcc eclipse/cpp_gcc
+  - job: "recipes__cross__mips__elf__Dockerfile"
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/cross-mips-elf
+        docker tag camino.azurecr.io/cantinona/cross-mips-elf cantinona/cross-mips-elf
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/cross-mips-elf/Dockerfile --cache-from cantinona/cross-mips-elf -t camino.azurecr.io/cantinona/cross-mips-elf recipes/cross-mips-elf
+      displayName: "Building camino.azurecr.io/cantinona/cross-mips-elf"
+    - script: docker push camino.azurecr.io/cantinona/cross-mips-elf
+      displayName: "Pushing camino.azurecr.io/cantinona/cross-mips-elf"
+
+### recipes/cross-nios2-elf/Dockerfile cantinona/cross-nios2-elf depends on eclipse/cpp_gcc eclipse/cpp_gcc
+  - job: "recipes__cross__nios2__elf__Dockerfile"
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/cross-nios2-elf
+        docker tag camino.azurecr.io/cantinona/cross-nios2-elf cantinona/cross-nios2-elf
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/cross-nios2-elf/Dockerfile --cache-from cantinona/cross-nios2-elf -t camino.azurecr.io/cantinona/cross-nios2-elf recipes/cross-nios2-elf
+      displayName: "Building camino.azurecr.io/cantinona/cross-nios2-elf"
+    - script: docker push camino.azurecr.io/cantinona/cross-nios2-elf
+      displayName: "Pushing camino.azurecr.io/cantinona/cross-nios2-elf"
+
+### recipes/mruby/Dockerfile cantinona/mruby depends on eclipse/ruby_rails eclipse/ruby_rails
+  - job: "recipes__mruby__Dockerfile"
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/mruby
+        docker tag camino.azurecr.io/cantinona/mruby cantinona/mruby
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/mruby/Dockerfile --cache-from cantinona/mruby -t camino.azurecr.io/cantinona/mruby recipes/mruby
+      displayName: "Building camino.azurecr.io/cantinona/mruby"
+    - script: docker push camino.azurecr.io/cantinona/mruby
+      displayName: "Pushing camino.azurecr.io/cantinona/mruby"
+
+### recipes/eosio-cdt/Dockerfile cantinona/eosio-cdt depends on eclipse/stack-base:ubuntu eclipse/stack-base/ubuntu
+  - job: "recipes__eosio__cdt__Dockerfile"
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/eosio-cdt
+        docker tag camino.azurecr.io/cantinona/eosio-cdt cantinona/eosio-cdt
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/eosio-cdt/Dockerfile --cache-from cantinona/eosio-cdt -t camino.azurecr.io/cantinona/eosio-cdt recipes/eosio-cdt
+      displayName: "Building camino.azurecr.io/cantinona/eosio-cdt"
+    - script: docker push camino.azurecr.io/cantinona/eosio-cdt
+      displayName: "Pushing camino.azurecr.io/cantinona/eosio-cdt"
