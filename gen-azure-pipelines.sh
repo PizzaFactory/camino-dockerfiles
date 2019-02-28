@@ -21,6 +21,7 @@ for dockerfile in $(find recipes -name 'Dockerfile'); do
 
 ### $dockerfile $tag depends on $from $from_path
   - job: "${dockerfile//[-\/\.]/__}"
+    timeoutInMinutes: 0
     pool:
       vmImage: 'Ubuntu 16.04'
 __BODY1
@@ -31,8 +32,10 @@ __BODY2
 fi
 if [[ $PRIVATE_REPO != "" ]]; then
   pushtag=$PRIVATE_REPO/$tag
+  fromtag=$PRIVATE_REPO/$from
 else
   pushtag=$tag
+  fromtag=$from
 fi
 cat <<__BODY
     steps:
@@ -47,17 +50,23 @@ cat <<__BODY
     - script: |
         set +e
         docker pull $pushtag
-__BODY
-        if [[ $? == 0 ]]; then
-cat <<__BODY
-        docker tag $pushtag $tag
-__BODY
+        if [[ \$? == 0 ]]; then
+          docker tag $pushtag $tag
         else
-cat <<__BODY
-        docker pull $tag
-__BODY
+          docker pull $tag
         fi
-cat <<__BODY
+        if [[ \$? != 0 ]]; then
+          docker tag scratch $tag
+        fi
+        docker pull $fromtag
+        if [[ \$? == 0 ]]; then
+          docker tag $fromtag $from
+        else
+          docker pull $from
+        fi
+        if [[ \$? != 0 ]]; then
+          docker tag scratch $from
+        fi
         exit 0
       continueOnError: true
       failOnStderr: false
