@@ -1,4 +1,4 @@
-FROM camino.azurecr.io/eclipse/ruby_rails
+FROM eclipse/ruby_rails
 MAINTAINER Masaki Muranaka <monaka@pizzafactory.jp>
 
 ENV DEBIAN_FRONTEND noninteractive
