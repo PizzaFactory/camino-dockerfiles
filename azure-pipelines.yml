@@ -1,0 +1,90 @@
+jobs:
+    
+
+### recipes/eosio-cdt/Dockerfile cantinona-partial/eosio-cdt depends on eclipse/stack-base:ubuntu eclipse/stack-base/ubuntu
+  - job: "recipes__eosio__cdt__Dockerfile"
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona-partial/eosio-cdt
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona-partial/eosio-cdt cantinona-partial/eosio-cdt
+        else
+          docker pull cantinona-partial/eosio-cdt
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch cantinona-partial/eosio-cdt
+        fi
+        docker pull camino.azurecr.io/eclipse/stack-base:ubuntu
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/eclipse/stack-base:ubuntu eclipse/stack-base:ubuntu
+        else
+          docker pull eclipse/stack-base:ubuntu
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch eclipse/stack-base:ubuntu
+        fi
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/eosio-cdt/Dockerfile --cache-from cantinona-partial/eosio-cdt -t camino.azurecr.io/cantinona-partial/eosio-cdt recipes/eosio-cdt
+      displayName: "Building camino.azurecr.io/cantinona-partial/eosio-cdt"
+    - script: docker push camino.azurecr.io/cantinona-partial/eosio-cdt
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      displayName: "Pushing camino.azurecr.io/cantinona-partial/eosio-cdt"
+
+### recipes/toppers-cfg/1.9.7/Dockerfile cantinona-partial/toppers-cfg:1.9.7 depends on eclipse/cpp_gcc eclipse/cpp_gcc
+  - job: "recipes__toppers__cfg__1__9__7__Dockerfile"
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7 cantinona-partial/toppers-cfg:1.9.7
+        else
+          docker pull cantinona-partial/toppers-cfg:1.9.7
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch cantinona-partial/toppers-cfg:1.9.7
+        fi
+        docker pull camino.azurecr.io/eclipse/cpp_gcc
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/eclipse/cpp_gcc eclipse/cpp_gcc
+        else
+          docker pull eclipse/cpp_gcc
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch eclipse/cpp_gcc
+        fi
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/toppers-cfg/1.9.7/Dockerfile --cache-from cantinona-partial/toppers-cfg:1.9.7 -t camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7 recipes/toppers-cfg/1.9.7
+      displayName: "Building camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7"
+    - script: docker push camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      displayName: "Pushing camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7"
