@@ -9,6 +9,98 @@ trigger:
 jobs:
 
 
+### recipes/eosio-cdt/Dockerfile cantinona/eosio-cdt depends on eclipse/cpp_gcc:ubuntu eclipse/cpp_gcc/ubuntu
+  - job: "recipes__eosio__cdt__Dockerfile"
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/eosio-cdt
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona/eosio-cdt cantinona/eosio-cdt
+        fi
+        docker pull camino.azurecr.io/cantinona/eosio-cdt
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona/eosio-cdt cantinona/eosio-cdt
+        else
+          docker pull cantinona/eosio-cdt
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch cantinona/eosio-cdt
+        fi
+        docker pull camino.azurecr.io/eclipse/cpp_gcc:ubuntu
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/eclipse/cpp_gcc:ubuntu eclipse/cpp_gcc:ubuntu
+        else
+          docker pull eclipse/cpp_gcc:ubuntu
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch eclipse/cpp_gcc:ubuntu
+        fi
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/eosio-cdt/Dockerfile --cache-from cantinona/eosio-cdt -t camino.azurecr.io/cantinona/eosio-cdt recipes/eosio-cdt
+      displayName: "Building camino.azurecr.io/cantinona/eosio-cdt"
+    - script: docker push camino.azurecr.io/cantinona/eosio-cdt
+      displayName: "Pushing camino.azurecr.io/cantinona/eosio-cdt"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+### recipes/cross-arm-eabi/Dockerfile cantinona/cross-arm-eabi depends on eclipse/cpp_gcc eclipse/cpp_gcc
+  - job: "recipes__cross__arm__eabi__Dockerfile"
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/cross-arm-eabi
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona/cross-arm-eabi cantinona/cross-arm-eabi
+        else
+          docker pull cantinona/cross-arm-eabi
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch cantinona/cross-arm-eabi
+        fi
+        docker pull camino.azurecr.io/eclipse/cpp_gcc
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/eclipse/cpp_gcc eclipse/cpp_gcc
+        else
+          docker pull eclipse/cpp_gcc
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch eclipse/cpp_gcc
+        fi
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/cross-arm-eabi/Dockerfile --cache-from cantinona/cross-arm-eabi -t camino.azurecr.io/cantinona/cross-arm-eabi recipes/cross-arm-eabi
+      displayName: "Building camino.azurecr.io/cantinona/cross-arm-eabi"
+    - script: docker push camino.azurecr.io/cantinona/cross-arm-eabi
+      displayName: "Pushing camino.azurecr.io/cantinona/cross-arm-eabi"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
 ### recipes/cross-bfin-elf/2014R1-RC2/Dockerfile cantinona/cross-bfin-elf:2014R1-RC2 depends on eclipse/cpp_gcc eclipse/cpp_gcc
   - job: "recipes__cross__bfin__elf__2014R1__RC2__Dockerfile"
     timeoutInMinutes: 0
@@ -141,6 +233,139 @@ jobs:
       displayName: "Pushing camino.azurecr.io/cantinona/cross-bfin-elf:2014R1_45-RC2"
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
+### recipes/a-rtegen/Dockerfile cantinona/a-rtegen depends on cantinona/cross-nios2-elf recipes/cross-nios2-elf
+  - job: "recipes__a__rtegen__Dockerfile"
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    dependsOn: "recipes__cross__nios2__elf__Dockerfile"
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/a-rtegen
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona/a-rtegen cantinona/a-rtegen
+        else
+          docker pull cantinona/a-rtegen
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch cantinona/a-rtegen
+        fi
+        docker pull camino.azurecr.io/cantinona/cross-nios2-elf
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona/cross-nios2-elf cantinona/cross-nios2-elf
+        else
+          docker pull cantinona/cross-nios2-elf
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch cantinona/cross-nios2-elf
+        fi
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/a-rtegen/Dockerfile --cache-from cantinona/a-rtegen -t camino.azurecr.io/cantinona/a-rtegen recipes/a-rtegen
+      displayName: "Building camino.azurecr.io/cantinona/a-rtegen"
+    - script: docker push camino.azurecr.io/cantinona/a-rtegen
+      displayName: "Pushing camino.azurecr.io/cantinona/a-rtegen"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+### recipes/mruby/Dockerfile cantinona/mruby depends on eclipse/ruby_rails eclipse/ruby_rails
+  - job: "recipes__mruby__Dockerfile"
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/mruby
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona/mruby cantinona/mruby
+        else
+          docker pull cantinona/mruby
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch cantinona/mruby
+        fi
+        docker pull camino.azurecr.io/eclipse/ruby_rails
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/eclipse/ruby_rails eclipse/ruby_rails
+        else
+          docker pull eclipse/ruby_rails
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch eclipse/ruby_rails
+        fi
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/mruby/Dockerfile --cache-from cantinona/mruby -t camino.azurecr.io/cantinona/mruby recipes/mruby
+      displayName: "Building camino.azurecr.io/cantinona/mruby"
+    - script: docker push camino.azurecr.io/cantinona/mruby
+      displayName: "Pushing camino.azurecr.io/cantinona/mruby"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
+### recipes/cross-mips-elf/Dockerfile cantinona/cross-mips-elf depends on eclipse/cpp_gcc eclipse/cpp_gcc
+  - job: "recipes__cross__mips__elf__Dockerfile"
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'Ubuntu 16.04'
+    steps:
+
+    - task: Docker@1
+      displayName: 'Login to ACR.'
+      inputs:
+        command: login
+        dockerRegistryEndpoint: camino.azurecr.io
+        containerregistrytype: Container Registry
+
+    - script: |
+        set +e
+        docker pull camino.azurecr.io/cantinona/cross-mips-elf
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/cantinona/cross-mips-elf cantinona/cross-mips-elf
+        else
+          docker pull cantinona/cross-mips-elf
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch cantinona/cross-mips-elf
+        fi
+        docker pull camino.azurecr.io/eclipse/cpp_gcc
+        if [[ $? == 0 ]]; then
+          docker tag camino.azurecr.io/eclipse/cpp_gcc eclipse/cpp_gcc
+        else
+          docker pull eclipse/cpp_gcc
+        fi
+        if [[ $? != 0 ]]; then
+          docker tag scratch eclipse/cpp_gcc
+        fi
+        exit 0
+      continueOnError: true
+      failOnStderr: false
+      displayName: "Pulling cache. (errors will be ignored)"
+    - script: docker build -f recipes/cross-mips-elf/Dockerfile --cache-from cantinona/cross-mips-elf -t camino.azurecr.io/cantinona/cross-mips-elf recipes/cross-mips-elf
+      displayName: "Building camino.azurecr.io/cantinona/cross-mips-elf"
+    - script: docker push camino.azurecr.io/cantinona/cross-mips-elf
+      displayName: "Pushing camino.azurecr.io/cantinona/cross-mips-elf"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+
 ### recipes/octopress/3.0-debian/Dockerfile cantinona/octopress:3.0-debian depends on eclipse/stack-base:debian eclipse/stack-base/debian
   - job: "recipes__octopress__3__0__debian__Dockerfile"
     timeoutInMinutes: 0
@@ -237,103 +462,6 @@ jobs:
       displayName: "Pushing camino.azurecr.io/cantinona/octopress:3.0-ubuntu"
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
 
-### recipes/eosio-cdt/Dockerfile cantinona/eosio-cdt depends on eclipse/stack-base:ubuntu eclipse/stack-base/ubuntu
-  - job: "recipes__eosio__cdt__Dockerfile"
-    timeoutInMinutes: 0
-    pool:
-      vmImage: 'Ubuntu 16.04'
-    steps:
-
-    - task: Docker@1
-      displayName: 'Login to ACR.'
-      inputs:
-        command: login
-        dockerRegistryEndpoint: camino.azurecr.io
-        containerregistrytype: Container Registry
-
-    - script: |
-        set +e
-        docker pull camino.azurecr.io/eclipse/stack-base:ubuntu
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/eclipse/stack-base:ubuntu eclipse/stack-base:ubuntu
-        fi
-        docker pull camino.azurecr.io/eclipse/stack-b
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/eclipse/stack-b eclipse/stack-b
-        fi
-        docker pull camino.azurecr.io/cantinona/eosio-cdt
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/cantinona/eosio-cdt cantinona/eosio-cdt
-        else
-          docker pull cantinona/eosio-cdt
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch cantinona/eosio-cdt
-        fi
-        docker pull camino.azurecr.io/eclipse/stack-base:ubuntu
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/eclipse/stack-base:ubuntu eclipse/stack-base:ubuntu
-        else
-          docker pull eclipse/stack-base:ubuntu
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch eclipse/stack-base:ubuntu
-        fi
-        exit 0
-      continueOnError: true
-      failOnStderr: false
-      displayName: "Pulling cache. (errors will be ignored)"
-    - script: docker build -f recipes/eosio-cdt/Dockerfile --cache-from cantinona/eosio-cdt -t camino.azurecr.io/cantinona/eosio-cdt recipes/eosio-cdt
-      displayName: "Building camino.azurecr.io/cantinona/eosio-cdt"
-    - script: docker push camino.azurecr.io/cantinona/eosio-cdt
-      displayName: "Pushing camino.azurecr.io/cantinona/eosio-cdt"
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
-### recipes/a-rtegen/Dockerfile cantinona/a-rtegen depends on cantinona/cross-nios2-elf recipes/cross-nios2-elf
-  - job: "recipes__a__rtegen__Dockerfile"
-    timeoutInMinutes: 0
-    pool:
-      vmImage: 'Ubuntu 16.04'
-    dependsOn: "recipes__cross__nios2__elf__Dockerfile"
-    steps:
-
-    - task: Docker@1
-      displayName: 'Login to ACR.'
-      inputs:
-        command: login
-        dockerRegistryEndpoint: camino.azurecr.io
-        containerregistrytype: Container Registry
-
-    - script: |
-        set +e
-        docker pull camino.azurecr.io/cantinona/a-rtegen
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/cantinona/a-rtegen cantinona/a-rtegen
-        else
-          docker pull cantinona/a-rtegen
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch cantinona/a-rtegen
-        fi
-        docker pull camino.azurecr.io/cantinona/cross-nios2-elf
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/cantinona/cross-nios2-elf cantinona/cross-nios2-elf
-        else
-          docker pull cantinona/cross-nios2-elf
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch cantinona/cross-nios2-elf
-        fi
-        exit 0
-      continueOnError: true
-      failOnStderr: false
-      displayName: "Pulling cache. (errors will be ignored)"
-    - script: docker build -f recipes/a-rtegen/Dockerfile --cache-from cantinona/a-rtegen -t camino.azurecr.io/cantinona/a-rtegen recipes/a-rtegen
-      displayName: "Building camino.azurecr.io/cantinona/a-rtegen"
-    - script: docker push camino.azurecr.io/cantinona/a-rtegen
-      displayName: "Pushing camino.azurecr.io/cantinona/a-rtegen"
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
 ### recipes/cross-nios2-elf/Dockerfile cantinona/cross-nios2-elf depends on eclipse/cpp_gcc eclipse/cpp_gcc
   - job: "recipes__cross__nios2__elf__Dockerfile"
     timeoutInMinutes: 0
@@ -376,136 +504,4 @@ jobs:
       displayName: "Building camino.azurecr.io/cantinona/cross-nios2-elf"
     - script: docker push camino.azurecr.io/cantinona/cross-nios2-elf
       displayName: "Pushing camino.azurecr.io/cantinona/cross-nios2-elf"
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
-### recipes/mruby/Dockerfile cantinona/mruby depends on eclipse/ruby_rails eclipse/ruby_rails
-  - job: "recipes__mruby__Dockerfile"
-    timeoutInMinutes: 0
-    pool:
-      vmImage: 'Ubuntu 16.04'
-    steps:
-
-    - task: Docker@1
-      displayName: 'Login to ACR.'
-      inputs:
-        command: login
-        dockerRegistryEndpoint: camino.azurecr.io
-        containerregistrytype: Container Registry
-
-    - script: |
-        set +e
-        docker pull camino.azurecr.io/cantinona/mruby
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/cantinona/mruby cantinona/mruby
-        else
-          docker pull cantinona/mruby
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch cantinona/mruby
-        fi
-        docker pull camino.azurecr.io/eclipse/ruby_rails
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/eclipse/ruby_rails eclipse/ruby_rails
-        else
-          docker pull eclipse/ruby_rails
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch eclipse/ruby_rails
-        fi
-        exit 0
-      continueOnError: true
-      failOnStderr: false
-      displayName: "Pulling cache. (errors will be ignored)"
-    - script: docker build -f recipes/mruby/Dockerfile --cache-from cantinona/mruby -t camino.azurecr.io/cantinona/mruby recipes/mruby
-      displayName: "Building camino.azurecr.io/cantinona/mruby"
-    - script: docker push camino.azurecr.io/cantinona/mruby
-      displayName: "Pushing camino.azurecr.io/cantinona/mruby"
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
-### recipes/cross-arm-eabi/Dockerfile cantinona/cross-arm-eabi depends on eclipse/cpp_gcc eclipse/cpp_gcc
-  - job: "recipes__cross__arm__eabi__Dockerfile"
-    timeoutInMinutes: 0
-    pool:
-      vmImage: 'Ubuntu 16.04'
-    steps:
-
-    - task: Docker@1
-      displayName: 'Login to ACR.'
-      inputs:
-        command: login
-        dockerRegistryEndpoint: camino.azurecr.io
-        containerregistrytype: Container Registry
-
-    - script: |
-        set +e
-        docker pull camino.azurecr.io/cantinona/cross-arm-eabi
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/cantinona/cross-arm-eabi cantinona/cross-arm-eabi
-        else
-          docker pull cantinona/cross-arm-eabi
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch cantinona/cross-arm-eabi
-        fi
-        docker pull camino.azurecr.io/eclipse/cpp_gcc
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/eclipse/cpp_gcc eclipse/cpp_gcc
-        else
-          docker pull eclipse/cpp_gcc
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch eclipse/cpp_gcc
-        fi
-        exit 0
-      continueOnError: true
-      failOnStderr: false
-      displayName: "Pulling cache. (errors will be ignored)"
-    - script: docker build -f recipes/cross-arm-eabi/Dockerfile --cache-from cantinona/cross-arm-eabi -t camino.azurecr.io/cantinona/cross-arm-eabi recipes/cross-arm-eabi
-      displayName: "Building camino.azurecr.io/cantinona/cross-arm-eabi"
-    - script: docker push camino.azurecr.io/cantinona/cross-arm-eabi
-      displayName: "Pushing camino.azurecr.io/cantinona/cross-arm-eabi"
-      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
-
-### recipes/cross-mips-elf/Dockerfile cantinona/cross-mips-elf depends on eclipse/cpp_gcc eclipse/cpp_gcc
-  - job: "recipes__cross__mips__elf__Dockerfile"
-    timeoutInMinutes: 0
-    pool:
-      vmImage: 'Ubuntu 16.04'
-    steps:
-
-    - task: Docker@1
-      displayName: 'Login to ACR.'
-      inputs:
-        command: login
-        dockerRegistryEndpoint: camino.azurecr.io
-        containerregistrytype: Container Registry
-
-    - script: |
-        set +e
-        docker pull camino.azurecr.io/cantinona/cross-mips-elf
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/cantinona/cross-mips-elf cantinona/cross-mips-elf
-        else
-          docker pull cantinona/cross-mips-elf
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch cantinona/cross-mips-elf
-        fi
-        docker pull camino.azurecr.io/eclipse/cpp_gcc
-        if [[ $? == 0 ]]; then
-          docker tag camino.azurecr.io/eclipse/cpp_gcc eclipse/cpp_gcc
-        else
-          docker pull eclipse/cpp_gcc
-        fi
-        if [[ $? != 0 ]]; then
-          docker tag scratch eclipse/cpp_gcc
-        fi
-        exit 0
-      continueOnError: true
-      failOnStderr: false
-      displayName: "Pulling cache. (errors will be ignored)"
-    - script: docker build -f recipes/cross-mips-elf/Dockerfile --cache-from cantinona/cross-mips-elf -t camino.azurecr.io/cantinona/cross-mips-elf recipes/cross-mips-elf
-      displayName: "Building camino.azurecr.io/cantinona/cross-mips-elf"
-    - script: docker push camino.azurecr.io/cantinona/cross-mips-elf
-      displayName: "Pushing camino.azurecr.io/cantinona/cross-mips-elf"
       condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
