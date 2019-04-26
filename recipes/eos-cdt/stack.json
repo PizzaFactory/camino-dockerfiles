@@ -1,0 +1,67 @@
+{
+  "description": "C/C++ Development Environment for EOSIO",
+  "scope": "general",
+  "tags": [
+    "EOS",
+    "Smart contract",
+    "EOSIO",
+    "Blockchain"
+  ],
+  "creator": "PizzaFactory Team",
+  "workspaceConfig": {
+    "environments": {
+      "default": {
+        "recipe": {
+          "contentType": "application/x-yaml",
+          "type": "kubernetes",
+          "content": "apiVersion: v1\nkind: List\nitems:\n - \n  apiVersion: v1\n  kind: Pod\n  metadata:\n   name: ws\n  spec:\n   containers:\n    - \n     args:\n      - '--http-server-address=localhost:5555'\n     command:\n      - keosd\n     image: 'camino.azurecr.io/eosio/eos:latest'\n     imagePullPolicy: Always\n     name: keosd\n     ports:\n      - \n       containerPort: 5555\n       protocol: TCP\n     resources:\n      limits:\n       memory: 1024Mi\n    - \n     args:\n      - '-e'\n      - '-p'\n      - 'eosio'\n      - '--plugin'\n      - 'eosio::producer_plugin'\n      - '--plugin'\n      - 'eosio::history_plugin'\n      - '--plugin'\n      - 'eosio::chain_api_plugin'\n      - '--plugin'\n      - 'eosio::history_plugin'\n      - '--plugin'\n      - 'eosio::history_api_plugin'\n      - '--plugin'\n      - 'eosio::http_plugin'\n      - '-d'\n      - /projects/.eosio/data\n      - '--config-dir'\n      - /projects/.eosio/config\n      - '--http-server-address=localhost:8888'\n      - '--access-control-allow-origin=*'\n      - '--contracts-console'\n      - '--http-validate-host=false'\n      - '--filter-on=*'\n     command:\n      - nodeos\n     image: 'camino.azurecr.io/eosio/eos:latest'\n\n  imagePullPolicy: Always\n     name: nodeos\n     ports:\n      - \n       containerPort: 7777\n       protocol: TCP\n     resources:\n      limits:\n       memory: 1024Mi\n\n   - \n     image: 'camino.azurecr.io/eosio/cdt:latest'\n     name: dev\n     mem_limit: 1073741824\n     resources:\n      limits:\n       memory: 1536Mi\n"
+        },
+        "machines": {
+          "ws/nodeos": {
+            "env": {},
+            "volumes": {},
+            "installers": [
+              "org.eclipse.che.terminal",
+              "org.eclipse.che.exec"
+            ],
+            "servers": {},
+            "attributes": {
+              "memoryLimitBytes": "536870912"
+            }
+          },
+          "ws/keosd": {
+            "env": {},
+            "volumes": {},
+            "installers": [],
+            "servers": {},
+            "attributes": {
+              "memoryLimitBytes": "536870912"
+            }
+          },
+          "ws/dev": {
+            "env": {},
+            "volumes": {},
+            "installers": [
+              "org.eclipse.che.terminal",
+              "org.eclipse.che.ws-agent",
+              "org.eclipse.che.exec"
+            ],
+            "servers": {},
+            "attributes": {
+              "memoryLimitBytes": "1073741824"
+            }
+          }
+        }
+      }
+    },
+    "projects": [],
+    "commands": [],
+    "defaultEnv": "default",
+    "name": "eosio",
+    "attributes": {},
+    "links": []
+  },
+  "components": [],
+  "name": "EOSIO.CDT",
+  "id": "jp.pizzafactory.camino:eosio-cdt:latest"
+}
