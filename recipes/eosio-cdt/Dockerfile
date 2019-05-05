@@ -1,6 +1,5 @@
-FROM eclipse/stack-base:ubuntu
+FROM camino.azurecr.io/eclipse/stack-base:ubuntu-xenial
 ARG branch=master
-ARG symbol=SYS
 
 USER root
 RUN apt-get update
@@ -19,7 +18,7 @@ WORKDIR /opt/eosio.cdt
 RUN git submodule update --recursive
 
 # Build eosio.cdt
-RUN ./build.sh ${symbol}
+RUN ./build.sh
 
 # Install eosio.cdt
 RUN ./install.sh
