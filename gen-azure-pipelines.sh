@@ -9,7 +9,6 @@ cat <<__HEADER
 trigger:
   branches:
    include:
-     - master
      - partial
 
 jobs:
