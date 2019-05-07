@@ -20,7 +20,7 @@ for dockerfile in $(find recipes -follow -name 'Dockerfile'); do
     a=${dockerfile%/Dockerfile}
     b=${a#recipes/}
     tag="${ORGANIZATION}/${b/\//:}"
-    from_all=$(sed -ne 's/FROM *\(.*\) *as.*/\1/p' $dockerfile)
+    from_all=$(sed -ne 's/FROM[ \t]\{1,\}\([^ \t]\{1,\}\)[ \t]\{1,\}as.*/\1/p' $dockerfile)
     from_a=$(sed -ne 's/^FROM *\(.*\)/\1/p' $dockerfile | tail -1)
     from=${from_a///}
     from_path_a=${from//:/\/}
