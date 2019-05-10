@@ -48,6 +48,14 @@ fi
 cat <<__HEAD
     steps:
 
+    - script: |
+        sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=2048
+        sudo chmod 600 /mnt/swapfile
+        sudo mkswap /mnt/swapfile
+        sudo swapon /mnt/swapfile
+        sudo swapon -s
+        free
+
     - task: Docker@1
       displayName: 'Login to ACR.'
       inputs:
