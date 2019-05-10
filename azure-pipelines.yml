@@ -15,6 +15,14 @@ jobs:
       vmImage: 'Ubuntu 16.04'
     steps:
 
+    - script: |
+        sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=2048
+        sudo chmod 600 /mnt/swapfile
+        sudo mkswap /mnt/swapfile
+        sudo swapon /mnt/swapfile
+        sudo swapon -s
+        free
+
     - task: Docker@1
       displayName: 'Login to ACR.'
       inputs:
@@ -46,7 +54,7 @@ jobs:
       continueOnError: true
       failOnStderr: false
       displayName: "Pulling cache. (errors will be ignored)"
-    - script: docker build -f recipes/toppers-cfg/1.9.7/Dockerfile --cache-from cantinona-partial/toppers-cfg:1.9.7 -t camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7 recipes/toppers-cfg/1.9.7
+    - script: docker build -f recipes/toppers-cfg/1.9.7/Dockerfile --cache-from cantinona-partial/toppers-cfg:1.9.7 -t camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7 -m 6g --memory-swap=-1 recipes/toppers-cfg/1.9.7
       displayName: "Building camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7"
     - script: docker push camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7
       displayName: "Pushing camino.azurecr.io/cantinona-partial/toppers-cfg:1.9.7"
@@ -58,6 +66,14 @@ jobs:
     pool:
       vmImage: 'Ubuntu 16.04'
     steps:
+
+    - script: |
+        sudo dd if=/dev/zero of=/mnt/swapfile bs=1M count=2048
+        sudo chmod 600 /mnt/swapfile
+        sudo mkswap /mnt/swapfile
+        sudo swapon /mnt/swapfile
+        sudo swapon -s
+        free
 
     - task: Docker@1
       displayName: 'Login to ACR.'
@@ -90,7 +106,7 @@ jobs:
       continueOnError: true
       failOnStderr: false
       displayName: "Pulling cache. (errors will be ignored)"
-    - script: docker build -f recipes/eosio-cdt/Dockerfile --cache-from cantinona-partial/eosio-cdt -t camino.azurecr.io/cantinona-partial/eosio-cdt recipes/eosio-cdt
+    - script: docker build -f recipes/eosio-cdt/Dockerfile --cache-from cantinona-partial/eosio-cdt -t camino.azurecr.io/cantinona-partial/eosio-cdt -m 6g --memory-swap=-1 recipes/eosio-cdt
       displayName: "Building camino.azurecr.io/cantinona-partial/eosio-cdt"
     - script: docker push camino.azurecr.io/cantinona-partial/eosio-cdt
       displayName: "Pushing camino.azurecr.io/cantinona-partial/eosio-cdt"
