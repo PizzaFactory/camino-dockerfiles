@@ -1,5 +1,5 @@
 FROM camino.azurecr.io/eclipse/stack-base:ubuntu-xenial
-ARG branch=master
+ARG branch=pr-crash-bug
 
 USER root
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
@@ -13,7 +13,7 @@ RUN apt-get upgrade -y
 
 # Clone eosio.cdt
 WORKDIR /opt
-RUN git clone -b ${branch} https://github.com/eosio/eosio.cdt --recursive
+RUN git clone -b ${branch} https://github.com/cryptcoin-junkey/eosio.cdt --recursive
 
 # Checkout eosio.cdt
 WORKDIR /opt/eosio.cdt
